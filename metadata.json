@@ -1,0 +1,5 @@
+{
+  "name": "Minecraft OBS Clock Overlay",
+  "description": "A transparent, top-right corner clock overlay for OBS using a Minecraft-style font with a black stroke.",
+  "requestFramePermissions": []
+}
