@@ -4,36 +4,79 @@ import { useTime } from '../hooks/useTime';
 export const MinecraftClock: React.FC = () => {
   const time = useTime();
 
-  // Format time as HH:MM:SS AM/PM or HH:MM:SS based on preference.
-  // Using standard 12-hour format with AM/PM which is common for overlays.
-  const formattedTime = time.toLocaleTimeString([], { 
-    hour: '2-digit', 
-    minute: '2-digit', 
-    second: '2-digit' 
+  const timeStr = time.toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true,
   });
 
+  const dateStr = time.toLocaleDateString([], {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric',
+  });
+
+  // Solid block text-shadow to simulate the "Minecraft Title" border
+  // Using multiple layers to ensure full coverage without anti-aliasing artifacts
+  const c = '#000000'; // Border color
+  
+  // A dense shadow generator for a solid pixel border
+  const generatePixelBorder = (size: number) => {
+    const shadows = [];
+    // Cardinals
+    shadows.push(`${size}px 0 0 ${c}`);
+    shadows.push(`-${size}px 0 0 ${c}`);
+    shadows.push(`0 ${size}px 0 ${c}`);
+    shadows.push(`0 -${size}px 0 ${c}`);
+    // Diagonals
+    shadows.push(`${size}px ${size}px 0 ${c}`);
+    shadows.push(`-${size}px ${size}px 0 ${c}`);
+    shadows.push(`${size}px -${size}px 0 ${c}`);
+    shadows.push(`-${size}px -${size}px 0 ${c}`);
+    // Intermediates for thicker strokes to prevent gaps in larger fonts
+    if (size > 2) {
+        const half = Math.floor(size / 2);
+        shadows.push(`${half}px ${size}px 0 ${c}`);
+        shadows.push(`-${half}px ${size}px 0 ${c}`);
+        shadows.push(`${size}px ${half}px 0 ${c}`);
+        shadows.push(`-${size}px ${half}px 0 ${c}`);
+        shadows.push(`${half}px -${size}px 0 ${c}`);
+        shadows.push(`-${half}px -${size}px 0 ${c}`);
+        shadows.push(`${size}px -${half}px 0 ${c}`);
+        shadows.push(`-${size}px -${half}px 0 ${c}`);
+    }
+    // Hard drop shadow for depth (bottom-right)
+    shadows.push(`${size + 2}px ${size + 2}px 0 #00000055`);
+    
+    return shadows.join(', ');
+  };
+
   return (
-    <div className="flex flex-col items-end">
+    <div className="flex flex-col items-end select-none">
       <div 
-        className="font-['VT323'] text-white text-8xl leading-none select-none"
+        className="font-['VT323'] text-white leading-none tracking-widest"
         style={{
-          // Use CSS text-shadow to simulate a heavy pixelated stroke/outline
-          // This often looks better than -webkit-text-stroke for pixel fonts
-          textShadow: `
-            3px 3px 0 #000,
-            -1px -1px 0 #000,  
-            1px -1px 0 #000,
-            -1px 1px 0 #000,
-            1px 1px 0 #000
-          `,
-          // Fallback stroke just in case, or for smoother scaling
-          WebkitTextStroke: '2px black',
-          paintOrder: 'stroke fill'
+          fontSize: '7rem', 
+          textShadow: generatePixelBorder(4),
+          // Ensure crisp rendering
+          fontSmooth: 'never',
+          WebkitFontSmoothing: 'none'
         }}
       >
-        {formattedTime}
+        {timeStr}
       </div>
-      {/* Optional: Add a small date below if desired, keeping it minimal for now based on request */}
+      <div 
+        className="font-['VT323'] text-[#FFFF55] leading-none tracking-wider mt-2"
+        style={{
+          fontSize: '3rem',
+          textShadow: generatePixelBorder(3),
+          fontSmooth: 'never',
+          WebkitFontSmoothing: 'none'
+        }}
+      >
+        {dateStr}
+      </div>
     </div>
   );
 };
